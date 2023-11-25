@@ -1,0 +1,14 @@
+/Users/simonfallman/SnakeGame/bin/Debug/net7.0/SnakeGame
+/Users/simonfallman/SnakeGame/bin/Debug/net7.0/SnakeGame.deps.json
+/Users/simonfallman/SnakeGame/bin/Debug/net7.0/SnakeGame.runtimeconfig.json
+/Users/simonfallman/SnakeGame/bin/Debug/net7.0/SnakeGame.dll
+/Users/simonfallman/SnakeGame/bin/Debug/net7.0/SnakeGame.pdb
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.GeneratedMSBuildEditorConfig.editorconfig
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.AssemblyInfoInputs.cache
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.AssemblyInfo.cs
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.csproj.CoreCompileInputs.cache
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.dll
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/refint/SnakeGame.dll
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.pdb
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/SnakeGame.genruntimeconfig.cache
+/Users/simonfallman/SnakeGame/obj/Debug/net7.0/ref/SnakeGame.dll
