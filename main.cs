@@ -15,17 +15,17 @@ public class Program
         ConsoleKeyInfo key = new ConsoleKeyInfo();
         try
         {
-            //Subtypspolymorfism, vi kan skapa en instans av en klass som ärver från en annan klass och sedan använda den som om den vore av basklassens typ.
             Movement moveRight = new MoveRight();
             Movement moveLeft = new MoveLeft();
             Movement moveDown = new MoveDown();
             Movement moveUp = new MoveUp();
+            //1: Beroendeinjektion - Konstruktorinjektion
+            //2: Snake-klassen tar in en instans av Grid och Movement genom konstruktorn.
+            //3: Vi har använt detta koncept för att instantiera en Snake i main och sedan skicka in grid och movement i konstruktorn.
             Grid grid = new Grid(10);
             List<Coordinates> snakeCoordinates = new List<Coordinates>
             {
                 new Coordinates(0, 0),
-
-
             };
 
             Snake snake = new Snake(grid, snakeCoordinates, moveRight);
@@ -34,9 +34,9 @@ public class Program
 
             do
             {
-
                 Console.Clear();
                 grid.PrintGrid();
+
                 if (grid.IsGridFull())
                 {
                     Console.WriteLine("You win!");
@@ -57,18 +57,14 @@ public class Program
                             snake.SetMovement(moveDown);
                             break;
                         case ConsoleKey.LeftArrow:
-                            snake.SetMovement(moveLeft);
+                            snake.SetMovement(moveLeft, 200);
                             break;
                         case ConsoleKey.RightArrow:
-                            snake.SetMovement(moveRight);
+                            snake.SetMovement(moveRight, 200);
                             break;
                     }
                 }
-
                 snake.Move();
-                Thread.Sleep(300); // Adjust the sleep duration as needed
-                // Inside your game loop
-
 
             } while (key.Key != ConsoleKey.Q);
         }
@@ -93,10 +89,15 @@ public class Coordinates
 }
 public class Snake
 {
+    //1: Objektkomposition, Snake har en lista av koordinater, har då en has-a relation till Coordinates. Har också en has-a relation till Grid och Movement.
+    //2: Klassen snake har en lista av koordinater som representerar ormens kropp. Den har också en instans av Grid och Movement.
+    //3: Vi har använt detta koncept för att ormen ska kunna röra sig och för att vi ska kunna skriva ut ormens kropp på griden.
     private List<Coordinates> body;
     private Grid grid;
     private Movement currentMovement;
-    // Beroendeinjektion: Snake-klassen tar in en instans av Grid och Movement genom konstruktorn. Detta gör att vi kan skapa en grid och movement i main och sedan skicka in dessa i konstruktorn.
+    //1: Beroendeinjektion - Egenskapsinjektion
+    //2: Snake-klassen tar in en instans av Grid och Movement genom konstruktorn. Detta gör att vi kan skapa en grid och movement i main och sedan skicka in dessa i konstruktorn.
+    //3: Vi har anvönt detta koncept för att vi ska kunna använda grid och movement i klassen för att konfiguera en Snake oberoende på hur de defineras.
     public Snake(Grid grid, List<Coordinates> initialBody, Movement initialMovement)
     {
         this.grid = grid;
@@ -106,7 +107,9 @@ public class Snake
 
     public List<Coordinates> Coordinates => body;
 
-    //Computed property, returnerar längden på ormen.
+    //1: Computed property
+    //2: Propertyn räknar ut längden på ormen genom att räkna antalet element i listan body vid varje anrop.
+    //3: Vi har använt detta koncept för att vi enkelt ska kunna få ut längden på ormen.
     public int Length => body.Count;
 
 
@@ -118,7 +121,7 @@ public class Snake
         IEdible currentEdible = grid.CurrentEdibleOrNull(newHead);
 
 
-        if (IsGameOver(newHead, body.Skip(1).ToList()))
+        if (IsGameOver(newHead, body.Skip(1).ToList())) ///ChatGpt har använts för att förstå logiken bakom detta.
         {
             Console.WriteLine("Game over, you hit yourself!");
             Environment.Exit(0);
@@ -135,11 +138,11 @@ public class Snake
         }
 
         grid.SetCell(body);
+        Thread.Sleep(currentMovement.GetSpeed());
     }
 
     public void GrowByThree()
     {
-        // Assuming each element of the body represents one unit
         for (int i = 0; i < 3; i++)
         {
             Coordinates tail = body[body.Count - 1];
@@ -179,19 +182,32 @@ public class Snake
         grid.RemoveCell(tail);
         body.RemoveAt(body.Count - 1);
     }
-
+    //1: Overloading av instansmetoder
+    //2: Vi kan skicka in olika parametrar till metoden SetMovement och den kommer att anropa olika konstruktorer beroende på vilka parametrar vi skickar in.
+    //3: Vi har använt detta koncept så vi har möjlighet att enkelt ändra röreslehastigeheten på ormen vid olika knapptryckningar. Elelr behålla default speed.
     public void SetMovement(Movement newMovement)
     {
         currentMovement = newMovement;
     }
+    public void SetMovement(Movement newMovement, int speed)
+    {
+        currentMovement = newMovement;
+        currentMovement.SetSpeed(speed);
+
+    }
 }
-//Interface för ätbara objekt, alla ätbara objekt måste ha en X och Y koordinat. Ger möjlighet till subtypspolymorfism genom att lätt kunna addera nya frukter som uppfyller kontraktet.
+
+//1: Interface
+//2: Vi har ett interface IEdible som är kontraktet som subklasserna måste följa.
+//3: Vi har använt detta koncept för att vi ska kunna skapa olika ätbara objekt som alla har olika implementationer. Därav möjliggör subtypspolyformism eftersom vi har olika beteenden för olika ätbara objekt.
 public interface IEdible
 {
     int X { get; }
     int Y { get; }
 
-    //Default interface method, Subklassen kan ha egen implementation, men om de inte har det så returneras denna.
+    //1: Default interface method
+    //2: Vi har en default implementation av metoden GetEdibleSymbol som alla klasser som implementerar IEdible har tillgång till.
+    //3: För att om vi vill ändra symbolen för alla default implementationer så behöver vi bara ändra på en plats. Förhindrar kodupprepning.
     string GetEdibleSymbol()
     {
         return " X ";
@@ -199,79 +215,106 @@ public interface IEdible
     void GetEatenBy(Snake snake);
 
 }
-public abstract class Edible : IEdible
+
+public class Apple : IEdible
 {
     public int X { get; }
     public int Y { get; }
 
-    protected Edible(int x, int y)
+    public Apple(int x, int y)
     {
         X = x;
         Y = y;
     }
-    public abstract string GetEdibleSymbol();
-
-
-    public void GetEatenBy(Snake snake)
-    {
-        WhenEatenBy(snake);
-    }
-    protected abstract void WhenEatenBy(Snake snake);
-}
-
-public class Apple : Edible
-{
-    public Apple(int x, int y) : base(x, y) { }
-
-    public override string GetEdibleSymbol()
+    public string GetEdibleSymbol()
     {
         return " 🍎";
     }
-
-    protected override void WhenEatenBy(Snake snake)
+    public void GetEatenBy(Snake snake)
     {
         snake.GrowByOne();
     }
 }
 
-public class Orange : Edible
+public class Orange : IEdible
 {
-    public Orange(int x, int y) : base(x, y) { }
+    public int X { get; }
+    public int Y { get; }
 
-    public override string GetEdibleSymbol()
+    public Orange(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+    public string GetEdibleSymbol()
     {
         return " 🍊";
     }
-
-    protected override void WhenEatenBy(Snake snake)
+    public void GetEatenBy(Snake snake)
     {
         snake.GrowByThree();
     }
 }
 
-public class Banana : Edible
+public class Banana : IEdible
 {
-    public Banana(int x, int y) : base(x, y) { }
+    public int X { get; }
+    public int Y { get; }
 
-    public override string GetEdibleSymbol()
+    public Banana(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+    public string GetEdibleSymbol()
     {
         return " 🍌";
     }
-
-    protected override void WhenEatenBy(Snake snake)
+    public void GetEatenBy(Snake snake)
     {
         snake.CrazyMonkeyFriday();
+    }
+}
+public class Melon : IEdible
+{
+    public int X { get; }
+    public int Y { get; }
+
+    public Melon(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+    public void GetEatenBy(Snake snake)
+    {
+        snake.GrowByOne();
+    }
+}
+public class Kiwi : IEdible
+{
+    public int X { get; }
+    public int Y { get; }
+
+    public Kiwi(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+    public void GetEatenBy(Snake snake)
+    {
+        snake.GrowByOne();
     }
 }
 
 
 public class Grid
 {
-    //Inkapsling / Informationsgömning, gör att vi inte kan ändra på gridens storlek efter att den har skapats.
+    //1: Inkapsling / Informationsgömning, gör att vi inte kan ändra på gridens storlek efter att den har skapats.
+    //2: Vi har fältet cells som private.
+    //3: Vi har valt att använda detta koncept för att man ej ska kunna nå cells utifrån Grid klassen.
     private string[][] cells;
     public int Rows { get; private set; }
     public int Columns { get; private set; }
-    //Objektkompistion, grid har en lista av ätbara objekt, har då en has-a relation till IEdible.
     private List<IEdible> edibles = new List<IEdible>();
     public List<IEdible> Edibles => edibles;
 
@@ -290,7 +333,9 @@ public class Grid
             }
         }
     }
-    //Overloading av konstruktorer, Beroende på om vi skriver vår grid med ett eller 2 tal så kommer den att skapa en kvadratisk grid eller en rektangulär grid.
+    //1: Overloading av konstruktorer
+    //2: Beroende på om vi skriver vår grid med ett eller 2 tal så kommer den att skapa en kvadratisk grid eller en rektangulär grid.
+    //3: Vi har använt detta koncept så vi enkelt kan välja formatet på vår grid. Ger oss mer flexibilitet.
     public Grid(int sides) : this(sides, sides) { }
 
     public void PrintGrid()
@@ -340,6 +385,9 @@ public class Grid
 
             if (!isOccupiedBySnake && !isOccupiedByEdible)
             {
+                //1: Subtypspolymorfism
+                //2: Vi skapar en instans av en klass som implementerar IEdible och sedan lägger vi till den i vår lista av ätbara objekt. Spelar ingen roll vilket ätbart objekt det är, utan vi vet att den uppfyller IEdible kontraktet.
+                //3: Vi har använt detta koncept för att oberoende på vilken subtyp det är så behandlar vi det som en IEdible. Detta gör att vi kan skapa olika ätbara objekt som alla har olika beteenden.
                 IEdible randomEdible = CreateRandomEdible(row, column);
                 edibles.Add(randomEdible);
                 cells[row][column] = randomEdible.GetEdibleSymbol();
@@ -381,11 +429,11 @@ public class Grid
     }
 
 }
-
-//Abstract klass som alla rörelser ärver från, overridar abstract metoden ChangeDirection som alla rörelser måste ha.
 public abstract class Movement
 {
-    //Åtkomstmodifierare protected, gör att klasser som ärver från Movement kan komma åt dessa variabler.
+    //1: Åtkomstmodifierare protected
+    //2: Gör att klasser som ärver från Movement kan komma åt dessa variabler. 
+    //3: För att inkapsla så att dessa inte kan ändras utifrån klassträdet, alltså superklassen med dess subklasser. 
     protected int XChange { get; }
     protected int YChange { get; }
 
@@ -396,8 +444,18 @@ public abstract class Movement
     }
 
     public abstract Coordinates ChangeDirection(List<Coordinates> coordinates);
+    private int speed = 300;
+
+    public virtual void SetSpeed(int newSpeed)
+    {
+        speed = newSpeed;
+    }
+
+    public int GetSpeed()
+    {
+        return speed;
+    }
 }
-//Arv av klasser, alla rörelser ärver från Move som i sin tur ärver från Movement. Move är en konkret klass som implementerar ChangeDirection metoden.
 
 class Move : Movement
 {
@@ -412,7 +470,9 @@ class Move : Movement
 
 class MoveRight : Move
 {
-    //Konstruktor-kedjning som anropar basklassens konstruktor med värdena baserat på vad vi skriver i base parantesen.
+    //1: Konstruktor-kedjning
+    //2: Vi använder nyckelordet base, för att kalla på superklassens konstruktor i subklassen.
+    //3: Vi har använt detta koncept för att minimera duplicering av kod, konstruktor-kedjning gör koden mer läsbar och lättare att underhålla.
     public MoveRight() : base(0, 1) { }
 }
 
