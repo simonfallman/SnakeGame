@@ -13,6 +13,7 @@ public class Game
 
     public void Start()
     {
+        Console.Clear();
         Console.WriteLine(" _____                _          ");
         Console.WriteLine("/  ___|              | |         ");
         Console.WriteLine("\\ `--.  _ __    __ _ | | __  ___ ");
@@ -40,7 +41,7 @@ public class Game
                 break;
             }
 
-            Console.WriteLine($"Score💀: {snake.Score}");
+            Console.WriteLine($"Score: {snake.Score}");
             Console.WriteLine("Press Q to quit");
 
             if (Console.KeyAvailable)

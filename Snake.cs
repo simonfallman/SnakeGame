@@ -2,16 +2,16 @@
 
 public class Snake
 {
-    //1: Objektkomposition, Snake har en lista av koordinater, har då en has-a relation till Coordinates. Har också en has-a relation till Grid och Movement.
+    //1: Objektkomposition, Snake har en lista av koordinater, har då en has-a relation till Coordinates. Har också en has-a relation till Grid och Movement samt Game.
     //2: Klassen snake har en lista av koordinater som representerar ormens kropp. Den har också en instans av Grid och Movement.
-    //3: Vi har använt detta koncept för att ormen ska kunna röra sig och för att vi ska kunna skriva ut ormens kropp på griden.
+    //3: Vi har använt detta koncept för att ormen ska kunna komma åt medlemmar i andra klasser som i flera krävs i Snake klassens medlemmar.
     private List<Coordinates> body;
     private Game game;
     public Grid Grid { get; private set; }
     private Movement currentMovement;
     //1: Beroendeinjektion - Konstruktorinjektion
-    //2: Snake-klassen tar in en instans av Grid och Movement genom konstruktorn. Detta gör att vi kan skapa en grid och movement i main och sedan skicka in dessa i konstruktorn.
-    //3: Vi har använt detta koncept för att vi ska kunna använda grid och movement i klassen för att 
+    //2: Alla de olika klasserna som Snake tar in som parametrar i konstruktorn är beroenden till Snake klassen. Alltså injicerar vi beroenden till Snake klassen.
+    //3: Vi har använt detta koncept för att urskilja Snakes skapning mot dess användning. Vi kan skicka in olika beroenden och Snake beter sig annorlunda.
     public Snake(Game game, Grid grid, List<Coordinates> initialBody, Movement initialMovement)
     {
         this.game = game;
@@ -23,8 +23,8 @@ public class Snake
     public List<Coordinates> Coordinates => body;
 
     //1: Computed property
-    //2: Propertyn räknar ut längden på ormen genom att räkna antalet element i listan body vid varje anrop.
-    //3: Vi har använt detta koncept för att vi enkelt ska kunna få ut längden på ormen.
+    //2: Propertyn räknar ut ditt score genom att multiplicera längden med 100.
+    //3: Vi har använt detta koncept för att vid varje "tick" alltså varje gång vi kör vår loop i Game uppdateras scoren. Varför computed property? För att det ska kunna räknas ut automatiskt.
     public int Score => body.Count * 100;
     private long lastEdibleMoveTicks = DateTime.Now.Ticks;
 
@@ -121,7 +121,7 @@ public class Snake
     
     //1: Overloading av instansmetoder
     //2: Vi kan skicka in olika parametrar till metoden SetMovement och den kommer att anropa olika konstruktorer beroende på vilka parametrar vi skickar in.
-    //3: Vi har använt detta koncept så vi har möjlighet att enkelt ändra röreslehastigeheten på ormen vid olika knapptryckningar. Elelr behålla default speed.
+    //3: Vi har använt detta koncept så vi har möjlighet att enkelt ändra rörelsehastigeheten på ormen vid de olika move knapparna. Eller behålla default speed.
     public void SetMovement(Movement newMovement)
     {
         currentMovement = newMovement;

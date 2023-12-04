@@ -2,12 +2,12 @@
 
 //1: Abstrakt klass
 //2: Vi har en abstrakt klass som implementerar IEdible och som alla ätbara objekt ärver ifrån.
-//3: Varför vi anvönt detta är att vissa metoder är gemensamma för all ätbara objekt såsom MoveEdibleToNewPosition och GetEatenBy har alla sin egen implementation.
+//3: Varför vi använt detta är att vissa metoder är gemensamma för all ätbara objekt såsom MoveEdibleToNewPosition och GetEatenBy har alla sin egen implementation.
 public abstract class Edible : IEdible
 {
     //1: Åtkomstmodifierare protected
     //2: Gör att klasser som ärver från Edible kan komma åt dessa variabler.
-    //3: Vi har använt detta koncept för att de som ärver utav Edible ärver även X och Y koordinaterna. Dessa variabler är protected så de kan inte ändras utifrån superklass och subklass.
+    //3: Vi har använt detta koncept för att de som ärver utav Edible kan komma åt set accessor för X och Y koordinaterna. Dessa variabler är protected så de kan inte ändras utifrån superklass och subklass.
     public int X { get; protected set; }
     public int Y { get; protected set; }
 

@@ -4,7 +4,7 @@ public class Grid
 {
     //1: Inkapsling / Informationsgömning, gör att vi inte kan ändra på gridens storlek efter att den har skapats.
     //2: Vi har fältet cells som private.
-    //3: Vi har valt att använda detta koncept för att man ej ska kunna ändra cells utifrån Grid klassen.
+    //3: Vi har valt att använda detta koncept för att man ej ska kunna ändra cells utifrån Grid klassen. Detta gör vi för att säkerställa att cells inte ändras utifrån Grid klassen.
     private string[][] cells;
     public string[][] Cells => cells;
     public int Rows { get; private set; }
@@ -29,7 +29,7 @@ public class Grid
     }
     //1: Overloading av konstruktorer
     //2: Beroende på om vi skriver vår grid med ett eller 2 tal så kommer den att skapa en kvadratisk grid eller en rektangulär grid.
-    //3: Vi har använt detta koncept så vi enkelt kan välja formatet på vår grid. Ger oss mer flexibilitet.
+    //3: Vi har använt detta koncept så vi enkelt kan välja formatet på vår grid. Ger oss mer flexibilitet. Vi som programmerare kan välja vilken grid vi vill ha. Inte slutanvändaren.
     //1: Konstruktor-kedjning
     //2: Vi använder nyckelordet this, för att kalla på den andra konstruktorn.
     //3: Vi har använt detta koncept för att minimera duplicering av kod, konstruktor-kedjning gör koden mer läsbar och lättare att underhålla.
